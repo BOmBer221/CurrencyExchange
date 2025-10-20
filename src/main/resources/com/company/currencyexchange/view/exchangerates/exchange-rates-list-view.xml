@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      xmlns:c="http://jmix.io/schema/flowui/jpql-condition"
+      title="msg://exchangeRatesListView.title"
+      focusComponent="exchangeRatesesDataGrid">
+    <data>
+        <collection id="exchangeRatesesDc"
+                    class="com.company.currencyexchange.entity.ExchangeRates">
+            <fetchPlan extends="_base">
+                <property name="baseCurrencyId" fetchPlan="_base">
+                    <property name="code"/>
+                </property>
+                <property name="targetCurrencyId" fetchPlan="_base">
+                    <property name="code"/>
+                </property>
+            </fetchPlan>
+            <loader id="exchangeRatesesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from ExchangeRates e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+        <urlQueryParameters>
+            <genericFilter component="genericFilter"/>
+            <pagination component="pagination"/>
+        </urlQueryParameters>
+    </facets>
+    <actions>
+        <action id="selectAction" type="lookup_select"/>
+        <action id="discardAction" type="lookup_discard"/>
+    </actions>
+    <layout>
+        <genericFilter id="genericFilter"
+                       dataLoader="exchangeRatesesDl">
+            <properties include=".*"/>
+        </genericFilter>
+        <hbox id="buttonsPanel" classNames="buttons-panel">
+            <button id="createButton" action="exchangeRatesesDataGrid.createAction"/>
+            <button id="editButton" action="exchangeRatesesDataGrid.editAction"/>
+            <button id="removeButton" action="exchangeRatesesDataGrid.removeAction"/>
+            <simplePagination id="pagination" dataLoader="exchangeRatesesDl"/>
+        </hbox>
+        <dataGrid id="exchangeRatesesDataGrid"
+                  width="100%"
+                  minHeight="20em"
+                  dataContainer="exchangeRatesesDc"
+                  columnReorderingAllowed="true">
+            <actions>
+                <action id="createAction" type="list_create"/>
+                <action id="editAction" type="list_edit"/>
+                <action id="removeAction" type="list_remove"/>
+            </actions>
+            <columns resizable="true">
+                <column property="baseCurrencyId.code"/>
+                <column property="rate"/>
+                <column property="targetCurrencyId.code"/>
+                <column property="createDate"/>
+            </columns>
+        </dataGrid>
+        <hbox id="lookupActions" visible="false">
+            <button id="selectButton" action="selectAction"/>
+            <button id="discardButton" action="discardAction"/>
+        </hbox>
+    </layout>
+</view>

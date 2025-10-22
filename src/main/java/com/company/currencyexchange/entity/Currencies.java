@@ -1,6 +1,7 @@
 package com.company.currencyexchange.entity;
 
 import io.jmix.core.entity.annotation.JmixGeneratedValue;
+import io.jmix.core.metamodel.annotation.InstanceName;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -18,6 +19,7 @@ public class Currencies {
     @Id
     private UUID id;
 
+    @InstanceName
     @Column(name = "CODE")
     private String code;
 

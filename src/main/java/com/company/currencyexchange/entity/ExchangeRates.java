@@ -4,12 +4,12 @@ import io.jmix.core.entity.annotation.JmixGeneratedValue;
 import io.jmix.core.metamodel.annotation.JmixEntity;
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @JmixEntity
 @Table(name = "EXCHANGE_RATES", indexes = {
-        @Index(name = "IDX_EXCHANGE_RATES_TARGET_CURRENCY_ID", columnList = "TARGET_CURRENCY_ID_ID"),
-        @Index(name = "IDX_EXCHANGE_RATES_BASE_CURRENCY_ID", columnList = "")
+        @Index(name = "IDX_EXCHANGE_RATES_TARGET_CURRENCY_ID", columnList = "TARGET_CURRENCY_ID_ID")
 })
 @Entity
 public class ExchangeRates {
@@ -30,13 +30,13 @@ public class ExchangeRates {
     private Integer rate;
 
     @Column(name = "CREATE_DATE")
-    private String createDate;
+    private LocalDateTime createDate;
 
-    public String getCreateDate() {
-        return createDate;
-    }
-    public void setCreateDate(String createDate) {
+    public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
+    }
+    public LocalDateTime getCreateDate() {
+        return createDate;
     }
 
     public Integer getRate() {
@@ -66,5 +66,7 @@ public class ExchangeRates {
     public void setId(UUID id) {
         this.id = id;
     }
+
+
 
 }

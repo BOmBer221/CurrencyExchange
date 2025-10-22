@@ -7,6 +7,9 @@
               title="msg://com.company.currencyexchange.view.currencies/currenciesListView.title"/>
         <item view="ExchangeRates.list"
               title="msg://com.company.currencyexchange.view.exchangerates/exchangeRatesListView.title"/>
+        <item view="Currencyconverter"
+              title="msg://com.company.currencyexchange.view.currencyconverter/currencyconverter.title"/>
+
     </menu>
 
 </menu-config>

@@ -17,8 +17,6 @@
     <facets>
         <dataLoadCoordinator auto="true"/>
         <urlQueryParameters>
-            <genericFilter component="genericFilter"/>
-            <pagination component="pagination"/>
         </urlQueryParameters>
     </facets>
     <actions>
@@ -26,15 +24,10 @@
         <action id="discardAction" type="lookup_discard"/>
     </actions>
     <layout>
-        <genericFilter id="genericFilter"
-                       dataLoader="currenciesesDl">
-            <properties include=".*"/>
-        </genericFilter>
         <hbox id="buttonsPanel" classNames="buttons-panel">
-            <button id="createButton" action="currenciesesDataGrid.createAction"/>
-            <button id="editButton" action="currenciesesDataGrid.editAction"/>
-            <button id="removeButton" action="currenciesesDataGrid.removeAction"/>
-            <simplePagination id="pagination" dataLoader="currenciesesDl"/>
+            <button id="createButton" action="currenciesesDataGrid.createAction" text="Добавить"/>
+            <button id="editButton" action="currenciesesDataGrid.editAction" text="Редактировать"/>
+            <button id="removeButton" action="currenciesesDataGrid.removeAction" text="Удалить"/>
         </hbox>
         <dataGrid id="currenciesesDataGrid"
                   width="100%"

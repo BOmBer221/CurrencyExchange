@@ -4,15 +4,9 @@
     <data>
         <!-- DataContainer для модели -->
         <instance id="exchangeModelDc" class="com.company.currencyexchange.entity.ExchangeModel"/>
-
-        <!-- Коллекция валют для выбора в EntityPicker -->
-        <collection id="currenciesDc" class="com.company.currencyexchange.entity.Currencies">
-            <loader id="currenciesDl">
-                <query><![CDATA[select e from Currencies e order by e.code]]></query>
-            </loader>
-        </collection>
     </data>
-    <layout>        <vbox id="mainLayout" width="500px" maxWidth="100%">
+    <layout>
+        <vbox id="mainLayout" width="500px" maxWidth="100%">
 
         <!-- Заголовок -->
         <h3 id="title" text="Обмен валюты"/>
@@ -60,12 +54,6 @@
 
         <!-- Кнопка расчета -->
         <button id="convertButton" text="Рассчитать"/>
-
-    </vbox>    </layout>
-    <data>        <collection id="currenciesDc"
-                              class="com.company.currencyexchange.entity.Currencies">
-        <loader id="currenciesDl">
-            <query>                    <![CDATA[select e from Currencies e order by e.code]]>
-            </query>
-        </loader>        </collection>    </data>
+        </vbox>
+    </layout>
 </view>

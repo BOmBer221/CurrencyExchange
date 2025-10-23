@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://currencyConverter.title">
+    <data>
+        <!-- DataContainer для модели -->
+        <instance id="exchangeModelDc" class="com.company.currencyexchange.entity.ExchangeModel"/>
+
+        <!-- Коллекция валют для выбора в EntityPicker -->
+        <collection id="currenciesDc" class="com.company.currencyexchange.entity.Currencies">
+            <loader id="currenciesDl">
+                <query><![CDATA[select e from Currencies e order by e.code]]></query>
+            </loader>
+        </collection>
+    </data>
+    <layout>        <vbox id="mainLayout" width="500px" maxWidth="100%">
+
+        <!-- Заголовок -->
+        <h3 id="title" text="Обмен валюты"/>
+
+        <!-- Валюта с -->
+        <entityPicker id="fromCurrencyField"
+                      dataContainer="exchangeModelDc"
+                      property="fromCurrency"
+                      label="Базовая валюта:"
+                      width="400px">
+            <actions>
+                <action id="entityClear" type="entity_clear"/>
+                <action id="entityLookup" type="entity_lookup"/>
+            </actions>
+        </entityPicker>
+
+        <entityPicker id="toCurrencyField"
+                      dataContainer="exchangeModelDc"
+                      property="toCurrency"
+                      label="Целевая валюта:"
+                      width="400px">
+            <actions>
+                <action id="entityClear" type="entity_clear"/>
+                <action id="entityLookup" type="entity_lookup"/>
+            </actions>
+        </entityPicker>
+        <!-- Количество -->
+        <textField id="amountField"
+                   width="400px"
+                   maxWidth="100%"
+                   label="Количество:"/>
+
+        <!-- Обменный курс и результат -->
+        <textField id="rateField"
+                   width="400px"
+                   maxWidth="100%"
+                   label="Обменный курс:"
+                   readOnly="false"/>
+
+        <textField id="resultField"
+                   width="400px"
+                   maxWidth="100%"
+                   label="Результат:"
+                   readOnly="true"/>
+
+        <!-- Кнопка расчета -->
+        <button id="convertButton" text="Рассчитать"/>
+
+    </vbox>    </layout>
+    <data>        <collection id="currenciesDc"
+                              class="com.company.currencyexchange.entity.Currencies">
+        <loader id="currenciesDl">
+            <query>                    <![CDATA[select e from Currencies e order by e.code]]>
+            </query>
+        </loader>        </collection>    </data>
+</view>

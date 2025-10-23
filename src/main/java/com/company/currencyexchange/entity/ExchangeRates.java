@@ -27,23 +27,24 @@ public class ExchangeRates {
     private Currencies targetCurrencyId;
 
     @Column(name = "RATE")
-    private Integer rate;
+    private Double rate;
 
     @Column(name = "CREATE_DATE")
     private LocalDateTime createDate;
+
+    public void setRate(Double rate) {
+        this.rate = rate;
+    }
+
+    public Double getRate() {
+        return rate;
+    }
 
     public void setCreateDate(LocalDateTime createDate) {
         this.createDate = createDate;
     }
     public LocalDateTime getCreateDate() {
         return createDate;
-    }
-
-    public Integer getRate() {
-        return rate;
-    }
-    public void setRate(Integer rate) {
-        this.rate = rate;
     }
 
     public void setBaseCurrencyId(Currencies baseCurrencyId) {

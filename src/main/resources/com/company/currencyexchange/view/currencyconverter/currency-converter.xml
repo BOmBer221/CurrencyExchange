@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<view xmlns="http://jmix.io/schema/flowui/view"
+      title="msg://currencyConverter.title">
+    <data>
+        <collection id="currenciesesDc" class="com.company.currencyexchange.entity.Currencies">
+            <fetchPlan extends="_base"/>
+            <loader id="currenciesesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Currencies e]]>
+                </query>
+            </loader>
+        </collection>
+    </data>
+    <layout>
+        <vbox>
+            <!-- Базовая валюта -->
+            <entityComboBox id="from_currencieses"
+                            label="Базовая валюта:"
+                            width="400px"
+                            itemsContainer="currenciesesDc"
+                            metaClass="Currencies">
+                <actions>
+                    <action id="entityLookup" type="entity_lookup"/>
+                </actions>
+            </entityComboBox>
+
+            <!--Целевая валюта-->
+            <entityComboBox id="to_currencieses"
+                            label="Целевая валюта:"
+                            width="400px"
+                            itemsContainer="currenciesesDc"
+                            metaClass="Currencies">
+            </entityComboBox>
+
+            <!--Курс-->
+            <textField id="rate"
+                       label="Курс:"
+                       readOnly="true"
+                       width="400px"/>
+
+            <!--Количество-->
+            <textField id="count_"
+                       label="Количество:"
+                       width="400px"/>
+
+            <!--Результат-->
+            <textField id="result"
+                       datatype="double"
+                       label="Результат:"
+                       readOnly="true"
+                       width="400px"/>
+
+            <!--Кнопка рассчета-->
+            <button id="convertButton"
+                    width="200px"
+                    text="Рассчитать"/>
+        </vbox>
+    </layout>
+</view>

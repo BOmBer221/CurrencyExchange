@@ -1,18 +1,17 @@
 package com.company.currencyexchange.view.currencyconverter;
-
 import com.company.currencyexchange.entity.Currencies;
-import com.company.currencyexchange.entity.ExchangeModel;
 import com.company.currencyexchange.entity.ExchangeRates;
 import com.company.currencyexchange.view.main.MainView;
-import com.vaadin.flow.component.button.Button;
-import com.vaadin.flow.component.textfield.TextField;
+import com.vaadin.flow.component.AbstractField;
+import com.vaadin.flow.component.ClickEvent;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
-import io.jmix.flowui.component.valuepicker.EntityPicker;
+import io.jmix.flowui.component.combobox.EntityComboBox;
+import io.jmix.flowui.component.textfield.TypedTextField;
+import io.jmix.flowui.kit.component.button.JmixButton;
 import io.jmix.flowui.view.*;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.Optional;
 
 @Route(value = "currency-converter", layout = MainView.class)
 @ViewController(id = "CurrencyConverter")
@@ -20,81 +19,94 @@ import java.util.Optional;
 public class CurrencyConverter extends StandardView {
 
     @ViewComponent
-    private EntityPicker<Currencies> fromCurrencyField;
-
+    private JmixButton convertButton;
     @ViewComponent
-    private EntityPicker<Currencies> toCurrencyField;
-
+    private TypedTextField<Object> count_;
     @ViewComponent
-    private TextField amountField;
-
+    private EntityComboBox<Currencies> from_currencieses;
     @ViewComponent
-    private TextField rateField;
-
+    private TypedTextField<Object> rate;
     @ViewComponent
-    private TextField resultField;
-
+    private TypedTextField<Object> result;
     @ViewComponent
-    private Button convertButton;
-
+    private EntityComboBox<Currencies> to_currencieses;
     @Autowired
     private DataManager dataManager;
 
-    @Subscribe
-    public void onInit(InitEvent event) {
-        // обработчик кнопки
-        convertButton.addClickListener(e -> calculateResult());
-
-        // автообновление курса при изменении валют
-        fromCurrencyField.addValueChangeListener(e -> updateRate());
-        toCurrencyField.addValueChangeListener(e -> updateRate());
+    @Subscribe("from_currencieses")
+    public void onFrom_currenciesesComponentValueChange(final AbstractField.ComponentValueChangeEvent<EntityComboBox<Currencies>, Currencies> event) {
+        updateRate();
     }
+
+    @Subscribe("to_currencieses")
+    public void onTo_currenciesesComponentValueChange(final AbstractField.ComponentValueChangeEvent<EntityComboBox<Currencies>, Currencies> event) {
+        updateRate();
+    }
+
+    @Subscribe("convertButton")
+    public void onConvertButtonClick(final ClickEvent<JmixButton> event) {
+        try {
+            // Получаем курс и количество
+            String rateValue = rate.getValue(); // строка из textField
+            String countValue = count_.getValue(); // строка из textField
+
+            if (rateValue != null && !rateValue.isEmpty() &&
+                    countValue != null && !countValue.isEmpty()) {
+
+                double rateDouble = Double.parseDouble(rateValue);
+                double countDouble = Double.parseDouble(countValue);
+                double resultDouble = rateDouble * countDouble;
+                result.setValue(String.valueOf(resultDouble));
+            } else {
+                result.clear(); // очищаем, если данные некорректные
+            }
+        } catch (NumberFormatException e) {
+            result.clear(); // очищаем при ошибке парсинга
+        }
+    }
+
+
 
     private void updateRate() {
-        Currencies from = fromCurrencyField.getValue();
-        Currencies to = toCurrencyField.getValue();
+        Currencies base = from_currencieses.getValue();
+        Currencies target = to_currencieses.getValue();
 
-        if (from != null && to != null) {
-            // Сначала ищем прямой курс (from → to)
-            Optional<ExchangeRates> directRateOpt = dataManager.load(ExchangeRates.class)
-                    .query("select e from ExchangeRates e where e.baseCurrencyId.id = :fromId and e.targetCurrencyId.id = :toId")
-                    .parameter("fromId", from.getId())
-                    .parameter("toId", to.getId())
-                    .optional();
-            if (directRateOpt.isPresent()) {
-                rateField.setValue(String.valueOf(directRateOpt.get().getRate()));
-                return;
-            }
+        if (base != null && target != null) {
+            // Сначала ищем прямой курс
+            ExchangeRates exchangeRate = dataManager.load(ExchangeRates.class)
+                    .query("select e from ExchangeRates e " +
+                            "where e.baseCurrencyId = :base and e.targetCurrencyId = :target " +
+                            "order by e.createDate desc")
+                    .parameter("base", base)
+                    .parameter("target", target)
+                    .optional()
+                    .orElse(null);
 
-            // Если прямого курса нет — ищем обратный (to → from)
-            Optional<ExchangeRates> reverseRateOpt = dataManager.load(ExchangeRates.class)
-                    .query("select e from ExchangeRates e where e.baseCurrencyId.id = :toId and e.targetCurrencyId.id = :fromId")
-                    .parameter("fromId", from.getId())
-                    .parameter("toId", to.getId())
-                    .optional();
-            if (reverseRateOpt.isPresent()) {
-                Double reverseRate = reverseRateOpt.get().getRate();
-                if (reverseRate != null && reverseRate != 0) {
-                    rateField.setValue(String.valueOf(1 / reverseRate));
-                    return;
+            if (exchangeRate != null) {
+                rate.setValue(exchangeRate.getRate().toString());
+            } else {
+                // Прямого курса нет — ищем обратный курс (target → base)
+                ExchangeRates reverseRate = dataManager.load(ExchangeRates.class)
+                        .query("select e from ExchangeRates e " +
+                                "where e.baseCurrencyId = :target and e.targetCurrencyId = :base " +
+                                "order by e.createDate desc")
+                        .parameter("base", base)
+                        .parameter("target", target)
+                        .optional()
+                        .orElse(null);
+
+                if (reverseRate != null && reverseRate.getRate() != null && reverseRate.getRate().doubleValue() != 0) {
+                    // Используем обратный курс: 1 / reverseRate
+                    double inverse = 1.0 / reverseRate.getRate().doubleValue();
+                    rate.setValue(String.valueOf(inverse));
+                } else {
+                    // Если не найден вообще
+                    rate.clear();
                 }
             }
-
-            // Если ни прямого, ни обратного нет — очищаем поле
-            rateField.setValue("");
-        } else {
-            rateField.setValue("");
         }
     }
 
-    private void calculateResult() {
-        try {
-            double amount = Double.parseDouble(amountField.getValue());
-            double rate = Double.parseDouble(rateField.getValue());
-            double result = amount * rate;
-            resultField.setValue(String.format("%.2f", result));
-        } catch (Exception ex) {
-            resultField.setValue("Ошибка ввода");
-        }
-    }
+
+
 }

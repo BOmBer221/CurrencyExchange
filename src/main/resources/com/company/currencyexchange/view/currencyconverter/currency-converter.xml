@@ -2,58 +2,58 @@
 <view xmlns="http://jmix.io/schema/flowui/view"
       title="msg://currencyConverter.title">
     <data>
-        <!-- DataContainer для модели -->
-        <instance id="exchangeModelDc" class="com.company.currencyexchange.entity.ExchangeModel"/>
+        <collection id="currenciesesDc" class="com.company.currencyexchange.entity.Currencies">
+            <fetchPlan extends="_base"/>
+            <loader id="currenciesesDl" readOnly="true">
+                <query>
+                    <![CDATA[select e from Currencies e]]>
+                </query>
+            </loader>
+        </collection>
     </data>
     <layout>
-        <vbox id="mainLayout" width="500px" maxWidth="100%">
+        <vbox>
+            <!-- Базовая валюта -->
+            <entityComboBox id="from_currencieses"
+                            label="Базовая валюта:"
+                            width="400px"
+                            itemsContainer="currenciesesDc"
+                            metaClass="Currencies">
+                <actions>
+                    <action id="entityLookup" type="entity_lookup"/>
+                </actions>
+            </entityComboBox>
 
-        <!-- Заголовок -->
-        <h3 id="title" text="Обмен валюты"/>
+            <!--Целевая валюта-->
+            <entityComboBox id="to_currencieses"
+                            label="Целевая валюта:"
+                            width="400px"
+                            itemsContainer="currenciesesDc"
+                            metaClass="Currencies">
+            </entityComboBox>
 
-        <!-- Валюта с -->
-        <entityPicker id="fromCurrencyField"
-                      dataContainer="exchangeModelDc"
-                      property="fromCurrency"
-                      label="Базовая валюта:"
-                      width="400px">
-            <actions>
-                <action id="entityClear" type="entity_clear"/>
-                <action id="entityLookup" type="entity_lookup"/>
-            </actions>
-        </entityPicker>
+            <!--Курс-->
+            <textField id="rate"
+                       label="Курс:"
+                       readOnly="true"
+                       width="400px"/>
 
-        <entityPicker id="toCurrencyField"
-                      dataContainer="exchangeModelDc"
-                      property="toCurrency"
-                      label="Целевая валюта:"
-                      width="400px">
-            <actions>
-                <action id="entityClear" type="entity_clear"/>
-                <action id="entityLookup" type="entity_lookup"/>
-            </actions>
-        </entityPicker>
-        <!-- Количество -->
-        <textField id="amountField"
-                   width="400px"
-                   maxWidth="100%"
-                   label="Количество:"/>
+            <!--Количество-->
+            <textField id="count_"
+                       label="Количество:"
+                       width="400px"/>
 
-        <!-- Обменный курс и результат -->
-        <textField id="rateField"
-                   width="400px"
-                   maxWidth="100%"
-                   label="Обменный курс:"
-                   readOnly="false"/>
+            <!--Результат-->
+            <textField id="result"
+                       datatype="double"
+                       label="Результат:"
+                       readOnly="true"
+                       width="400px"/>
 
-        <textField id="resultField"
-                   width="400px"
-                   maxWidth="100%"
-                   label="Результат:"
-                   readOnly="true"/>
-
-        <!-- Кнопка расчета -->
-        <button id="convertButton" text="Рассчитать"/>
+            <!--Кнопка рассчета-->
+            <button id="convertButton"
+                    width="200px"
+                    text="Рассчитать"/>
         </vbox>
     </layout>
 </view>

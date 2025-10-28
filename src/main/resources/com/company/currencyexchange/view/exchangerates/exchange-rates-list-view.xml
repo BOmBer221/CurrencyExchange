@@ -19,9 +19,6 @@
     </data>
     <facets>
         <dataLoadCoordinator auto="true"/>
-        <urlQueryParameters>
-            <pagination component="pagination"/>
-        </urlQueryParameters>
     </facets>
     <actions>
         <action id="selectAction" type="lookup_select"/>
@@ -32,7 +29,8 @@
             <button id="createButton" action="exchangeRatesesDataGrid.createAction" text="Создать"/>
             <button id="editButton" action="exchangeRatesesDataGrid.editAction" text="Редактировать"/>
             <button id="removeButton" action="exchangeRatesesDataGrid.removeAction" text="Удалить"/>
-            <simplePagination id="pagination" dataLoader="exchangeRatesesDl"/>
+            <button id="updateButton" text="Обновить курс"/>
+
         </hbox>
         <dataGrid id="exchangeRatesesDataGrid"
                   width="100%"

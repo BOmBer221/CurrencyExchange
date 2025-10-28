@@ -66,7 +66,6 @@ public class CurrencyConverter extends StandardView {
     }
 
 
-
     private void updateRate() {
         Currencies base = from_currencieses.getValue();
         Currencies target = to_currencieses.getValue();

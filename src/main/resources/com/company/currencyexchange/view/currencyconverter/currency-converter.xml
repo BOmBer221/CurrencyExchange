@@ -11,6 +11,9 @@
             </loader>
         </collection>
     </data>
+    <facets>
+        <dataLoadCoordinator auto="true"/>
+    </facets>
     <layout>
         <vbox>
             <!-- Базовая валюта -->
@@ -19,9 +22,6 @@
                             width="400px"
                             itemsContainer="currenciesesDc"
                             metaClass="Currencies">
-                <actions>
-                    <action id="entityLookup" type="entity_lookup"/>
-                </actions>
             </entityComboBox>
 
             <!--Целевая валюта-->

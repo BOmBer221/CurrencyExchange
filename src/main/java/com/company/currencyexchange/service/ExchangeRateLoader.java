@@ -24,6 +24,54 @@ public class ExchangeRateLoader {
     private final DataManager dataManager;
     private final RestTemplate restTemplate = new RestTemplate();
 
+    private String fetchCbrXml() {
+        try {
+            String url = "https://www.cbr.ru/scripts/XML_daily.asp";
+            return restTemplate.getForObject(url, String.class);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    private Map<String, ValuteInfo> parseCbrXml(String xml) {
+        Map<String, ValuteInfo> map = new HashMap<>();
+        try {
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
+            DocumentBuilder builder = factory.newDocumentBuilder();
+            Document doc = builder.parse(new InputSource(new StringReader(xml)));
+
+            NodeList valutes = doc.getElementsByTagName("Valute");
+            for (int i = 0; i < valutes.getLength(); i++) {
+                Node val = valutes.item(i);
+                String charCode = null;
+                Integer nominal = 1;
+                Double value = 0.0;
+                NodeList children = val.getChildNodes();
+                for (int j = 0; j < children.getLength(); j++) {
+                    Node c = children.item(j);
+                    String name = c.getNodeName();
+                    if ("CharCode".equals(name)) {
+                        charCode = c.getTextContent().trim();
+                    } else if ("Nominal".equals(name)) {
+                        try {
+                            nominal = Integer.parseInt(c.getTextContent().trim());
+                        } catch (NumberFormatException ignored) {}
+                    } else if ("Value".equals(name)) {
+                        String s = c.getTextContent().trim().replace(',', '.');
+                        try {
+                            value = Double.parseDouble(s);
+                        } catch (NumberFormatException ignored) {}
+                    }
+                }
+                if (charCode != null) {
+                    map.put(charCode, new ValuteInfo(nominal, value));
+                }
+            }
+        } catch (Exception ignored) {}
+        return map;
+    }
+
     // Список валют которые надо обновлять (целевые) — RUB является базовой
     private static final List<CurrencyMeta> TARGETS = Arrays.asList(
             new CurrencyMeta("USD", "Доллар США", "$", "США"),
@@ -136,53 +184,7 @@ public class ExchangeRateLoader {
         }
     }
 
-    private String fetchCbrXml() {
-        try {
-            String url = "https://www.cbr.ru/scripts/XML_daily.asp";
-            return restTemplate.getForObject(url, String.class);
-        } catch (Exception e) {
-            return null;
-        }
-    }
 
-    private Map<String, ValuteInfo> parseCbrXml(String xml) {
-        Map<String, ValuteInfo> map = new HashMap<>();
-        try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setFeature("http://apache.org/xml/features/disallow-doctype-decl", true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new InputSource(new StringReader(xml)));
-
-            NodeList valutes = doc.getElementsByTagName("Valute");
-            for (int i = 0; i < valutes.getLength(); i++) {
-                Node val = valutes.item(i);
-                String charCode = null;
-                Integer nominal = 1;
-                Double value = 0.0;
-                NodeList children = val.getChildNodes();
-                for (int j = 0; j < children.getLength(); j++) {
-                    Node c = children.item(j);
-                    String name = c.getNodeName();
-                    if ("CharCode".equals(name)) {
-                        charCode = c.getTextContent().trim();
-                    } else if ("Nominal".equals(name)) {
-                        try {
-                            nominal = Integer.parseInt(c.getTextContent().trim());
-                        } catch (NumberFormatException ignored) {}
-                    } else if ("Value".equals(name)) {
-                        String s = c.getTextContent().trim().replace(',', '.');
-                        try {
-                            value = Double.parseDouble(s);
-                        } catch (NumberFormatException ignored) {}
-                    }
-                }
-                if (charCode != null) {
-                    map.put(charCode, new ValuteInfo(nominal, value));
-                }
-            }
-        } catch (Exception ignored) {}
-        return map;
-    }
 
     private Currencies findOrCreateCurrency(String code, String fullName, String sign, String country) {
         Currencies existing = dataManager.load(Currencies.class)

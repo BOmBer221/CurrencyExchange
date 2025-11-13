@@ -15,15 +15,15 @@ public class CurrencyService {
     @Autowired
     public UnconstrainedDataManager dataManager;
 
+    public List<Currencies> getCurrencies () {
+        return dataManager.load(Currencies.class).all().list();
+    }
+
     public List<CurrencyDTO> getCurrencyDTO() {
         List<Currencies> currencies = getCurrencies();
         List<CurrencyDTO> currencyDTOs = new ArrayList<>();
         currencies.stream().map(this::mapDTO).forEach(currencyDTOs::add);
         return currencyDTOs;
-    }
-
-    public List<Currencies> getCurrencies () {
-        return dataManager.load(Currencies.class).all().list();
     }
 
     public CurrencyDTO mapDTO(Currencies currency) {
@@ -33,5 +33,15 @@ public class CurrencyService {
         currencyDTO.setSign(currency.getSign());
         return currencyDTO;
     }
+
+    public CurrencyDTO getCurrencyByCode(String code) {
+        List<Currencies> currencies = dataManager.load(Currencies.class)
+                .query("select c from Currencies c where c.code = :code")
+                .parameter("code", code)
+                .list();
+        return mapDTO(currencies.get(0));
+    }
+
+
 }
 

@@ -26,6 +26,7 @@ public class ExchangeRatesService {
         return exchangeRatesDTOs;
     }
 
+    //мапер ДТО
     public ExchangeRatesDTO mapDTO(ExchangeRates exchangeRate) {
         ExchangeRatesDTO dto = dataManager.create(ExchangeRatesDTO.class);
 
@@ -36,6 +37,35 @@ public class ExchangeRatesService {
         dto.setName(exchangeRate.getBaseCurrencyId().getCode() + " → " + exchangeRate.getTargetCurrencyId().getCode());
 
         return dto;
+    }
+
+    //JPQL запрос курс валют по коду
+    public ExchangeRatesDTO getRateByCode(String baseCode,String targetCode ) {
+        ExchangeRates dto = dataManager.load(ExchangeRates.class)
+                .query("select e from ExchangeRates e " +
+                        "where e.baseCurrencyId.code = :base " +
+                        "and e.targetCurrencyId.code = :target")
+                .parameter("base",baseCode)
+                .parameter("target",targetCode)
+                .optional()
+                .orElse(null);
+
+        return dto == null ? null : mapDTO(dto);
+    }
+
+    //JPQL запрос удаления курса валют по коду
+    public boolean deleteRateByCode(String baseCode,String targetCode ) {
+        ExchangeRates dto =dataManager.load(ExchangeRates.class)
+                .query("select e from ExchangeRates e " +
+                        "where e.baseCurrencyId.code = :base " +
+                        "and e.targetCurrencyId.code = :target")
+                .parameter("base", baseCode)
+                .parameter("target", targetCode)
+                .optional()
+                .orElse(null);
+        if (dto == null) {return false;}
+        dataManager.remove(dto);
+        return true;
     }
 
 

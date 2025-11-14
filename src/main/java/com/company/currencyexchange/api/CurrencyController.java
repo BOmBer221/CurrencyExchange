@@ -17,6 +17,7 @@ public class CurrencyController {
     @Autowired
     private CurrencyService currencyService;
 
+    //получить все валюты
     @GetMapping("/all")
     public ResponseEntity<List<CurrencyDTO>> getCurrencies() {
         List<CurrencyDTO> currencies= currencyService.getCurrencyDTO();
@@ -24,6 +25,7 @@ public class CurrencyController {
 
     }
 
+    // получить валюту по коду
     @GetMapping("{code}")
     public ResponseEntity<CurrencyDTO> getCurrencyByCode(@PathVariable String code) {
         CurrencyDTO currency = currencyService.getCurrencyByCode(code);
@@ -31,6 +33,17 @@ public class CurrencyController {
             return ResponseEntity.notFound().build(); // 404 если не найдено
         }
         return ResponseEntity.ok(currency);           // 200 + JSON если найдено
+    }
+
+    // удаление валюты по коду
+    //по идее работает, но не удаляется, так как есть связь с таблицей ExchangeRate
+    @DeleteMapping("{code}")
+    public ResponseEntity<CurrencyDTO> deleteCurrencyByCode(@PathVariable String code) {
+        boolean deleted = currencyService.deleteCurrencyByCode(code);
+        if (deleted) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
     }
 
 }

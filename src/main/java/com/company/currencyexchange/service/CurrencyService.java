@@ -19,6 +19,7 @@ public class CurrencyService {
         return dataManager.load(Currencies.class).all().list();
     }
 
+    // получение всех валют в виде списка
     public List<CurrencyDTO> getCurrencyDTO() {
         List<Currencies> currencies = getCurrencies();
         List<CurrencyDTO> currencyDTOs = new ArrayList<>();
@@ -26,6 +27,7 @@ public class CurrencyService {
         return currencyDTOs;
     }
 
+    //мапер ДТО
     public CurrencyDTO mapDTO(Currencies currency) {
         CurrencyDTO currencyDTO = dataManager.create(CurrencyDTO.class);
         currencyDTO.setName(currency.getFullName());
@@ -34,14 +36,30 @@ public class CurrencyService {
         return currencyDTO;
     }
 
+    // JPQL запрос валюты по коду
     public CurrencyDTO getCurrencyByCode(String code) {
-        List<Currencies> currencies = dataManager.load(Currencies.class)
+        Currencies currencies = dataManager.load(Currencies.class)
                 .query("select c from Currencies c where c.code = :code")
                 .parameter("code", code)
-                .list();
-        return mapDTO(currencies.get(0));
+                .optional()
+                .orElse(null);
+
+        return currencies == null?null: mapDTO(currencies);
     }
 
+    // удаление валюты по коду
+    //по идее работает, но не удаляется, так как есть связь с таблицей ExchangeRate
+    public boolean deleteCurrencyByCode(String code) {
+        Currencies currencies = dataManager.load(Currencies.class)
+                .query("select c from Currencies c " +
+                        "where c.code = :code")
+                .parameter("code", code)
+                .optional()
+                .orElse(null);
+        if (currencies == null) {return false;}
+        dataManager.remove(currencies);
+        return true;
+    }
 
 }
 

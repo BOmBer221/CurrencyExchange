@@ -4,6 +4,7 @@ import com.company.currencyexchange.entity.ExchangeRates;
 import com.company.currencyexchange.view.main.MainView;
 import com.vaadin.flow.component.AbstractField;
 import com.vaadin.flow.component.ClickEvent;
+import com.vaadin.flow.component.HasValue;
 import com.vaadin.flow.router.Route;
 import io.jmix.core.DataManager;
 import io.jmix.flowui.component.combobox.EntityComboBox;
@@ -21,7 +22,7 @@ public class CurrencyConverter extends StandardView {
     @ViewComponent
     private JmixButton convertButton;
     @ViewComponent
-    private TypedTextField<Object> count_;
+    private TypedTextField<Double> count_;
     @ViewComponent
     private EntityComboBox<Currencies> from_currencieses;
     @ViewComponent
@@ -64,7 +65,6 @@ public class CurrencyConverter extends StandardView {
             result.clear(); // очищаем при ошибке парсинга
         }
     }
-
 
     private void updateRate() {
         Currencies base = from_currencieses.getValue();

@@ -2,6 +2,7 @@ package com.company.currencyexchange.service;
 
 import com.company.currencyexchange.dto.CurrencyDTO;
 import com.company.currencyexchange.entity.Currencies;
+import com.company.currencyexchange.entity.ExchangeRates;
 import io.jmix.core.UnconstrainedDataManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -43,21 +44,44 @@ public class CurrencyService {
                 .parameter("code", code)
                 .optional()
                 .orElse(null);
-
+        //обработчик ошибки
+        if (currencies == null) {
+            throw new IllegalArgumentException("Валюта с кодом: "+code+" не найдена");
+        }
         return currencies == null?null: mapDTO(currencies);
     }
 
     // удаление валюты по коду
     //по идее работает, но не удаляется, так как есть связь с таблицей ExchangeRate
     public boolean deleteCurrencyByCode(String code) {
-        Currencies currencies = dataManager.load(Currencies.class)
-                .query("select c from Currencies c " +
-                        "where c.code = :code")
+
+        // Загружаем валюту
+        Currencies currency = dataManager.load(Currencies.class)
+                .query("select c from Currencies c where c.code = :code")
                 .parameter("code", code)
                 .optional()
                 .orElse(null);
-        if (currencies == null) {return false;}
-        dataManager.remove(currencies);
+        //обработчик ошибок
+        if (currency == null) {
+            throw new IllegalArgumentException("Валюта с кодом: "+code+" не найдена");
+        }
+
+        // Проверяем связи с таблицей ExchangeRates
+        List<ExchangeRates> related = dataManager.load(ExchangeRates.class)
+                .query("select e from ExchangeRates e " +
+                        "where e.baseCurrencyId = :cur or e.targetCurrencyId = :cur")
+                .parameter("cur", currency)
+                .list();
+
+        // Есть связанные курсы -> выбрасываем исключение
+        if (!related.isEmpty()) {
+            throw new IllegalStateException(
+                    "Невозможно удалить валюту " + code + " — существуют связанные курсы обмена"
+            );
+        }
+
+        // Удаляем валюту
+        dataManager.remove(currency);
         return true;
     }
 

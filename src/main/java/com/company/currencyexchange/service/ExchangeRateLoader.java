@@ -76,6 +76,7 @@ public class ExchangeRateLoader {
     private static final List<CurrencyMeta> TARGETS = Arrays.asList(
             new CurrencyMeta("USD", "Доллар США", "$", "США"),
             new CurrencyMeta("EUR", "Евро", "€", "Евросоюз"),
+            new CurrencyMeta("BYN", "Белорусский рубль", "Br", "Белорусь"),
             new CurrencyMeta("CNY", "Юань", "¥", "Китай"),
             new CurrencyMeta("TRY", "Турецких лир", "₺", "Турция"),
             new CurrencyMeta("GBP", "Фунт стерлингов", "£", "Великобритания")

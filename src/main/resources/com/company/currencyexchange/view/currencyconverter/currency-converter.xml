@@ -40,6 +40,8 @@
 
             <!--Количество-->
             <textField id="count_"
+                       pattern="^[0-9]*[.,]?[0-9]*$"
+                       placeholder="введите число:"
                        label="Количество:"
                        width="400px"/>
 

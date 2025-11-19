@@ -49,8 +49,11 @@ public class ExchangeRatesService {
                 .parameter("target",targetCode)
                 .optional()
                 .orElse(null);
-
-        return dto == null ? null : mapDTO(dto);
+        //обработка ошибки
+        if (dto == null) {
+            throw new IllegalArgumentException("Курс с базовым кодом "+ baseCode+" и целевым кодом "+targetCode+" не найден");
+        }
+        return mapDTO(dto);
     }
 
     //JPQL запрос удаления курса валют по коду
@@ -63,7 +66,9 @@ public class ExchangeRatesService {
                 .parameter("target", targetCode)
                 .optional()
                 .orElse(null);
-        if (dto == null) {return false;}
+        if (dto == null) {
+            throw new IllegalArgumentException("Курс с базовым кодом "+ baseCode+" и целевым кодом "+targetCode+" не найден");
+        }
         dataManager.remove(dto);
         return true;
     }

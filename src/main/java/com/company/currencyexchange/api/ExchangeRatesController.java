@@ -33,17 +33,11 @@ public class ExchangeRatesController {
 
     //удаление курса по коду валют
     @DeleteMapping
-    public ResponseEntity<ExchangeRatesDTO> deleteRate(
+    public ResponseEntity<String> deleteRate(
             @RequestParam String base,
             @RequestParam String target) {
-
         boolean deleted = exchangeRatesService.deleteRateByCode(base, target);
-
-        if (!deleted) {
-            return ResponseEntity.notFound().build();
-        }
-
-        return ResponseEntity.noContent().build(); // 204 No Content
+        return ResponseEntity.ok("Курс успешно удален!"); // 204 No Content
     }
 
 }
